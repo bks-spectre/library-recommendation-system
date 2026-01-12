@@ -1,4 +1,3 @@
-from db import get_connection, init_db
 from flask import Flask, render_template_string, request, jsonify
 import pandas as pd
 import numpy as np
@@ -11,14 +10,14 @@ import warnings
 warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
-init_db()
 
 # ===================== DATA GENERATION =====================
 
 np.random.seed(42)
 
 # Storage for feedbacks and ratings
-
+feedbacks_list = []
+book_ratings_list = []
 
 genres = ['Fiction', 'Mystery', 'Science Fiction', 'Fantasy', 'Romance', 
           'History', 'Biography', 'Self-Help', 'Adventure', 'Thriller']
@@ -2293,25 +2292,6 @@ def register_student():
     last_id_num = max([int(sid[1:]) for sid in existing_ids])
     new_student_id = f"S{last_id_num + 1:02d}"
     
-    # ⬇️ SAVE STUDENT TO POSTGRESQL DATABASE
-    conn = get_connection()
-    cur = conn.cursor()
-
-    cur.execute("""
-    INSERT INTO students (student_id, name, grade, preference_genre, preferred_level, books_read)
-    VALUES (%s, %s, %s, %s, %s, %s)
-    """, (
-        new_student_id,
-        data['name'],
-        data['grade'],
-        data.get('preference_genre', data['favorite_genres'][0]),
-        data['preferred_level'],
-        data['books_read']
-    ))
-
-    conn.commit()
-    conn.close()
-
     # Create new student record with all new fields
     new_student = {
         'student_id': new_student_id,
@@ -2360,90 +2340,92 @@ def register_student():
         'books_read': data['books_read']
     })
 
-
+# At the top of your file, after other imports
+feedbacks_list = []
+book_ratings_list = []
 
 # Add these routes before if __name__ == '__main__':
 
 @app.route('/submit_feedback', methods=['POST'])
 def submit_feedback():
+    global feedbacks_list
+    
     data = request.json
-
-    conn = get_connection()
-    cur = conn.cursor()
-
-    cur.execute("""
-    INSERT INTO feedbacks (name, student_id, rating, feedback, date)
-    VALUES (%s, %s, %s, %s, %s)
-    """, (
-        data['name'],
-        data['student_id'],
-        data['rating'],
-        data['feedback'],
-        data['date']
-    ))
-
-    conn.commit()
-    conn.close()
-
+    feedback = {
+        'id': len(feedbacks_list) + 1,
+        'name': data['name'],
+        'student_id': data['student_id'],
+        'rating': data['rating'],
+        'feedback': data['feedback'],
+        'date': data['date']
+    }
+    
+    feedbacks_list.append(feedback)
+    
     return jsonify({'success': True, 'message': 'Feedback submitted successfully!'})
 
 
 @app.route('/check_rating')
 def check_rating():
+    global reading_history_df
+    
     student_id = request.args.get('student_id')
     book_id = request.args.get('book_id')
-
-    conn = get_connection()
-    cur = conn.cursor()
-
-    cur.execute("""
-    SELECT rating, review
-    FROM book_ratings
-    WHERE student_id = %s AND book_id = %s
-    ORDER BY id DESC
-    LIMIT 1
-    """, (student_id, book_id))
-
-    result = cur.fetchone()
-    conn.close()
-
-    if result:
+    
+    # Check if rating exists in reading_history_df
+    existing_rating = reading_history_df[
+        (reading_history_df['student_id'] == student_id) & 
+        (reading_history_df['book_id'] == book_id)
+    ]
+    
+    if len(existing_rating) > 0:
+        rating_value = int(existing_rating.iloc[0]['rating'])
         return jsonify({
             'has_rating': True,
-            'rating': result['rating'],
-            'review': result['review']
+            'rating': rating_value,
+            'review': ''  # We don't have reviews in original data
         })
     else:
         return jsonify({'has_rating': False})
 
 
-
 @app.route('/submit_book_rating', methods=['POST'])
 def submit_book_rating():
+    global reading_history_df, book_ratings_list
+    
     data = request.json
-
-    conn = get_connection()
-    cur = conn.cursor()
-
-    cur.execute("""
-    INSERT INTO book_ratings (student_id, book_id, rating, review, date_read)
-    VALUES (%s, %s, %s, %s, %s)
-    """, (
-        data['student_id'],
-        data['book_id'],
-        data['rating'],
-        data.get('review', ''),
-        data['date_read']
-    ))
-
-    conn.commit()
-    conn.close()
-
-    return jsonify({
-        'success': True,
-        'message': '✅ Rating saved successfully!'
+    student_id = data['student_id']
+    book_id = data['book_id']
+    
+    # Check if rating already exists
+    existing_mask = (reading_history_df['student_id'] == student_id) & (reading_history_df['book_id'] == book_id)
+    
+    if existing_mask.any():
+        # Update existing rating
+        reading_history_df.loc[existing_mask, 'rating'] = data['rating']
+        reading_history_df.loc[existing_mask, 'date_read'] = data['date_read']
+        message = '✅ Your rating has been updated successfully!'
+    else:
+        # Add new rating
+        new_rating = pd.DataFrame([{
+            'student_id': student_id,
+            'book_id': book_id,
+            'rating': data['rating'],
+            'date_read': data['date_read']
+        }])
+        reading_history_df = pd.concat([reading_history_df, new_rating], ignore_index=True)
+        message = '✅ Thank you for rating this book!'
+    
+    # Store detailed review separately
+    book_ratings_list.append({
+        'student_id': student_id,
+        'book_id': book_id,
+        'rating': data['rating'],
+        'review': data['review'],
+        'date': data['date_read']
     })
-
+    
+    return jsonify({'success': True, 'message': message})
 
 import os
 
