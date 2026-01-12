@@ -42,14 +42,14 @@ book_titles = {
 
 # Indian student names
 student_names = [
-    'Aarav Sharma', 'Vivaan Patel', 'Aditya Kumar', 'Vihaan Singh', 'Arjun Gupta',
-    'Sai Reddy', 'Arnav Verma', 'Ayaan Khan', 'Krishna Iyer', 'Ishaan Joshi',
-    'Aadhya Sharma', 'Ananya Patel', 'Diya Kumar', 'Navya Singh', 'Ira Gupta',
-    'Saanvi Reddy', 'Aanya Verma', 'Kiara Khan', 'Myra Iyer', 'Sara Joshi',
-    'Rohan Mehta', 'Kabir Nair', 'Dhruv Desai', 'Advait Malhotra', 'Reyansh Pillai',
-    'Aarohi Mehta', 'Pihu Nair', 'Riya Desai', 'Shanaya Malhotra', 'Tara Pillai',
-    'Atharv Rao', 'Shaurya Chopra', 'Vedant Agarwal', 'Yash Bansal', 'Pranav Kapoor',
-    'Anvi Rao', 'Avni Chopra', 'Pari Agarwal', 'Aaradhya Bansal', 'Nitya Kapoor',
+    'Aaditya Prakash Pandey', 'Aayush Adhikari', 'Aayushi Poddar', 'Addvitt Jain', 'Aneket Saravanan',
+    'Angad Nath', 'Arshi Katyal', 'Arul Singh', 'Aryan Singh Shrinet', 'Ayaan Ali',
+    'Bhavansh Kumar Sinha', 'Garv Kanojia', 'Gauri Kumar', 'Hamza Qadri', 'Harshil Gupta',
+    'Himadri Soni', 'Himanshu Kumar Shrivastava', 'Kalyani Singh', 'Koyal Shruti', 'Krishna Kumar',
+    'Kritika Sharma', 'Manya Mendiratta', 'Mayank Kumar Prajapati', 'Meet Gothwal', 'Pranab Kumar',
+    'Rahul Pokhariyal', 'Ridhima', 'Rishab Kumar Verma', 'Rishab Singh Bisht', 'Sai Krishna N',
+    'Sana Ali', 'Sarah Nama', 'Shashvat Shankar Gupta', 'Siddhima Patney', 'Veronica Vagrecha',
+    'Vihan Jain', 'Yashraj Chauhan', 'Pari Agarwal', 'Aaradhya Bansal', 'Nitya Kapoor',
     'Karthik Srinivasan', 'Amar Bose', 'Dev Kulkarni', 'Harsh Bhatt', 'Madhav Saxena',
     'Meera Srinivasan', 'Prisha Bose', 'Kavya Kulkarni', 'Zara Bhatt', 'Anika Saxena'
 ]
