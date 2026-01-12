@@ -99,7 +99,7 @@ students_data = []
 
 for idx, student_id in enumerate(student_ids):
     name = student_names[idx]
-    grade = np.random.choice([11, 12])
+    grade = np.array([12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,11,11,11,11,11,11,11,11,11,11,11,11,11])
     preference_genre = np.random.choice(genres)
     preferred_level = np.random.choice(['Beginner', 'Intermediate', 'Advanced'])
     books_read = np.random.randint(5, 20)
@@ -2430,4 +2430,5 @@ import os
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
+
 
