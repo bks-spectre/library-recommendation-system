@@ -1062,10 +1062,7 @@ HTML_TEMPLATE = '''
         </div>
 
         <footer>
-            <p>🎓 CBSE Class 12 AI Project | Advanced Library Recommendation System</p>
-            <p style="font-size: 0.9em; margin-top: 10px;">
-                Using: K-Means Clustering, Collaborative Filtering, Content-Based Filtering, Apriori Algorithm
-            </p>
+            <p>Advanced Library Recommendation System</p>
         </footer>
     </div>
 
