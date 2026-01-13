@@ -227,7 +227,8 @@ def calculate_association_rules():
         student_books = reading_history_df[reading_history_df['student_id'] == student_id]['book_id'].tolist()
         student_book_data = books_df[books_df['book_id'].isin(student_books)]
         
-        transaction = list(student_book_data['genre'].unique())
+        # FIXED: Convert to Python strings
+        transaction = [str(genre) for genre in student_book_data['genre'].unique()]
         transactions.append(transaction)
 
     te = TransactionEncoder()
@@ -240,19 +241,23 @@ def calculate_association_rules():
     association_rules_list = []
     if len(frequent_itemsets) > 0:
         min_confidence = 0.4
-        rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=min_confidence)
-        
-        if len(rules) > 0:
-            for idx, row in rules.iterrows():
-                antecedent = ', '.join(list(row['antecedents']))
-                consequent = ', '.join(list(row['consequents']))
-                association_rules_list.append({
-                    'from': antecedent,
-                    'to': consequent,
-                    'confidence': f"{row['confidence']:.1%}",
-                    'support': f"{row['support']:.1%}",
-                    'lift': f"{row['lift']:.2f}"
-                })
+        try:
+            rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=min_confidence, num_itemsets=len(frequent_itemsets))
+            
+            if len(rules) > 0:
+                for idx, row in rules.iterrows():
+                    # FIXED: Safely convert frozensets to strings
+                    antecedent = ', '.join([str(item) for item in row['antecedents']])
+                    consequent = ', '.join([str(item) for item in row['consequents']])
+                    association_rules_list.append({
+                        'from': antecedent,
+                        'to': consequent,
+                        'confidence': f"{row['confidence']:.1%}",
+                        'support': f"{row['support']:.1%}",
+                        'lift': f"{row['lift']:.2f}"
+                    })
+        except Exception as e:
+            print(f"Warning: Error generating association rules: {str(e)}")
     
     return association_rules_list
 
@@ -2436,4 +2441,3 @@ import os
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
-
