@@ -40,7 +40,7 @@ book_titles = {
     'Thriller': ['The Final Hour', 'Deadly Game', 'Run or Hide', 'The Chase', 'Edge of Danger']
 }
 
-# Indian student names
+# Student names
 student_names = [
     'Aaditya Prakash Pandey', 'Aayush Adhikari', 'Aayushi Poddar', 'Addvitt Jain', 'Aneket Saravanan',
     'Angad Nath', 'Arshi Katyal', 'Arul Singh', 'Aryan Singh Shrinet', 'Ayaan Ali',
@@ -99,7 +99,13 @@ students_data = []
 
 for idx, student_id in enumerate(student_ids):
     name = student_names[idx]
-    grade = np.array([12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,11,11,11,11,11,11,11,11,11,11,11,11,11])
+
+    # First 37 students → Grade 12, last 13 → Grade 11
+    if idx < 37:
+        grade = 12
+    else:
+        grade = 11
+
     preference_genre = np.random.choice(genres)
     preferred_level = np.random.choice(['Beginner', 'Intermediate', 'Advanced'])
     books_read = np.random.randint(5, 20)
@@ -1063,7 +1069,6 @@ HTML_TEMPLATE = '''
 
         <footer>
             <p>Advanced Library Recommendation System</p>
-            <p>Bharatiya Vidya Bhavan's Mehta Vidyalaya</p>
         </footer>
     </div>
 
@@ -2430,5 +2435,3 @@ import os
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
-
-
